@@ -54,7 +54,7 @@ public class Neo4jWriter {
 					relname = "unknown";
 				}
 				
-				Relationship rel = nsrc.createRelationshipTo(ntarget, DynamicRelationshipType.withName(relname));
+				Relationship rel = nsrc.createRelationshipTo(ntarget, factory.getRelationshipType());
 				indexProperty("id", e.getId(), instance, indexer, rel);
 				
 				for(String key : e.getAttributeNames()){
