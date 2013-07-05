@@ -3,7 +3,6 @@ package org.tno.networks.graph;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Node;
 import org.neo4j.graphdb.Relationship;
@@ -16,7 +15,7 @@ public class Neo4jWriter {
 	// TODO how to deal with credentials?
 	public static void write(Graph graph, String config) throws Neo4jException{
 		
-		Neo4jFactory factory = new Neo4jFactory(config);
+		Neo4jFactory factory = Neo4jFactory.getNeo4jFactory(config);
 		
 		GraphDatabaseService instance = factory.makeServiceInstance();
 		Neo4jIndexer indexer = factory.makeIndexerInstance();

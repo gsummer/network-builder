@@ -16,7 +16,7 @@ public class Neo4jIndexer {
 
 	public Neo4jIndexer(String nodeDefault, String edgeDefault){
 		nodeDefaultIndex = nodeDefault;
-		edgeDefault = edgeDefaultIndex;
+		edgeDefaultIndex = edgeDefault;
 	}
 	
 	public void addNodePropertyMapping(String propertyName, String indexName, String indexKey){

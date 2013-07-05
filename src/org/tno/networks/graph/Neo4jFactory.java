@@ -15,6 +15,24 @@ import org.neo4j.rest.graphdb.RestGraphDatabase;
 
 public class Neo4jFactory {
 	
+	private static Neo4jFactory factoryInstance = null;
+	
+	public static Neo4jFactory getNeo4jFactory(String configFile) throws Neo4jException{
+		if(factoryInstance == null){
+			factoryInstance = new Neo4jFactory(configFile);
+		}
+		
+		return factoryInstance;
+	}
+	
+	public static Neo4jFactory getNeo4jFactory() throws Neo4jException {
+		if(factoryInstance == null){
+			throw new Neo4jException("factory can not be initialized properly!");
+		}
+
+		return factoryInstance;	
+	}
+	
 	private static void registerShutdownHook( final GraphDatabaseService graphDb )
 	{
 		// Registers a shutdown hook for the Neo4j instance so that it
@@ -41,7 +59,7 @@ public class Neo4jFactory {
 	private GraphDatabaseService instance = null;
 	private Neo4jIndexer indexer = null;
 
-	public Neo4jFactory(String configFile) throws Neo4jException {
+	private Neo4jFactory(String configFile) throws Neo4jException {
 		SAXBuilder builder = new SAXBuilder();
 		try {
 			Document doc =builder.build(configFile);
