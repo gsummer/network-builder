@@ -13,16 +13,19 @@ import org.bridgedb.Xref;
 import org.bridgedb.bio.BioDataSource;
 import org.tno.networks.args.AHelp;
 import org.tno.networks.args.AIDMapper;
+import org.tno.networks.args.ANeo4j;
 import org.tno.networks.args.DIDMapper;
 import org.tno.networks.graph.AttributeName;
 import org.tno.networks.graph.GmlWriter;
+import org.tno.networks.graph.Graph;
 import org.tno.networks.graph.Graph.Edge;
 import org.tno.networks.graph.Graph.Node;
 import org.tno.networks.graph.InMemoryGraph;
+import org.tno.networks.graph.Neo4jGraph;
 import org.tno.networks.graph.XGMMLWriter;
 
-import uk.co.flamingpenguin.jewel.cli.CliFactory;
-import uk.co.flamingpenguin.jewel.cli.Option;
+import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
 
 /**
  * Import transcription factor targets from the TFe wiki.
@@ -33,8 +36,8 @@ public class TFeToNetwork {
 
 	private static final String TFE_URL = "http://www.cisreg.ca/cgi-bin/tfe/api.pl?";
 	
-	public static InMemoryGraph importTFe(String species) throws MalformedURLException, IOException {
-		InMemoryGraph graph = new InMemoryGraph();
+	public static Graph importTFe(String species, Graph graph) throws MalformedURLException, IOException {
+//		InMemoryGraph graph = new InMemoryGraph();
 		graph.setTitle("TFe");
 		graph.setDirected(true);
 		
@@ -74,7 +77,7 @@ public class TFeToNetwork {
 				nTgt.setAttribute(AttributeName.XrefDatasource.name(), target.getDataSource().getFullName());
 				nTgt.appendAttribute(AttributeName.TFeActingComplex.name(), cols[2]);
 				
-				Edge edge = graph.addEdge(nSrc + "target" + nTgt, nSrc, nTgt);
+				Edge edge = graph.addEdge(nSrc + "target" + nTgt, nSrc, nTgt,AttributeName.Interaction.name(),"TF target");
 				nTgt.setAttribute(AttributeName.TFeActingComplex.name(), cols[2]);
 				edge.setAttribute(AttributeName.TFeEffect.name(), cols[3]);
 				edge.setAttribute(AttributeName.PMID.name(), cols[4]);
@@ -95,7 +98,7 @@ public class TFeToNetwork {
 				Node nTgt = graph.addNode("" + target);
 				nTgt.setAttribute(AttributeName.Label.name(), cols[1]);
 				
-				Edge edge = graph.addEdge(nSrc + cols[3] + nTgt, nSrc, nTgt);
+				Edge edge = graph.addEdge(nSrc + cols[3] + nTgt, nSrc, nTgt,AttributeName.Interaction.name(),cols[3]);
 				edge.setAttribute(AttributeName.TFeExperiment.name(), cols[2]);
 				edge.setAttribute(AttributeName.Interaction.name(), cols[3]);
 				edge.setAttribute(AttributeName.PMID.name(), cols[4]);
@@ -117,7 +120,15 @@ public class TFeToNetwork {
 			Args pargs = CliFactory.parseArguments(Args.class, args);
 			DIDMapper didm = new DIDMapper(pargs);
 
-			InMemoryGraph graph = importTFe(pargs.isSpecies() ? pargs.getSpecies() : null);
+			Graph graph = null;
+			
+			if(pargs.getNeo4jConfig() != null && !pargs.getNeo4jConfig().isEmpty()){
+				graph = new Neo4jGraph(pargs.getNeo4jConfig());
+			} else {
+				graph = new InMemoryGraph();
+			}
+			
+			importTFe(pargs.isSpecies() ? pargs.getSpecies() : null,graph);
 			
 			//Translate ids if necessary
 			if(didm.getDataSources().length != 1 || !BioDataSource.ENTREZ_GENE.equals(didm.getDataSources()[0])) {
@@ -126,13 +137,15 @@ public class TFeToNetwork {
 				graph = nidm.mapIDs(graph);
 			}
 			
-			if(pargs.getOut().getName().endsWith(".gml")) {
-				writeGml("" + pargs.getOut(), graph);
-			} else if(pargs.getOut().getName().endsWith(".gml")) {
-				writeXgmml("" + pargs.getOut(), graph);
-			} else {
-				writeGml(pargs.getOut() + ".gml", graph);
-				writeXgmml(pargs.getOut() + ".xgmml", graph);
+			if(pargs.getOut() != null){
+				if(pargs.getOut().getName().endsWith(".gml")) {
+					writeGml("" + pargs.getOut(), graph);
+				} else if(pargs.getOut().getName().endsWith(".xgmml")) {
+					writeXgmml("" + pargs.getOut(), graph);
+				} else {
+					writeGml(pargs.getOut() + ".gml", graph);
+					writeXgmml(pargs.getOut() + ".xgmml", graph);
+				}
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
@@ -140,19 +153,19 @@ public class TFeToNetwork {
 
 	}
 
-	private static void writeGml(String f, InMemoryGraph g) throws FileNotFoundException {
+	private static void writeGml(String f, Graph graph) throws FileNotFoundException {
 		PrintWriter out = new PrintWriter(new File(f));
-		GmlWriter.write(g, out);
+		GmlWriter.write(graph, out);
 		out.close();
 	}
 	
-	private static void writeXgmml(String f, InMemoryGraph g) throws IOException {
+	private static void writeXgmml(String f, Graph g) throws IOException {
 		PrintWriter out = new PrintWriter(new File(f));
 		XGMMLWriter.write(g, out);
 		out.close();
 	}
 	
-	private interface Args extends AHelp, AIDMapper {
+	private interface Args extends AHelp, AIDMapper, ANeo4j {
 		@Option(shortName = "o", description = "The file to write the network to")
 		File getOut();
 		

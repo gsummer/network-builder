@@ -52,6 +52,13 @@ public class InMemoryGraph extends InMemoryAttributeHolder implements Graph {
 	}
 	
 	@Override
+	public Edge addEdge(String id, Node src, Node tgt, String typename, String type) {
+		Edge e = addEdge(id,src,tgt);
+		e.setAttribute(typename, type);
+		return e;
+	}
+	
+	@Override
 	public Node getNode(String id) { return nodes.get(id); }
 	
 	@Override

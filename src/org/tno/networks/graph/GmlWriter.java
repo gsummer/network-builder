@@ -7,17 +7,17 @@ import org.tno.networks.graph.Graph.Edge;
 import org.tno.networks.graph.Graph.Node;
 
 public class GmlWriter {
-	public static void write(InMemoryGraph graph, PrintWriter out) {
+	public static void write(Graph g, PrintWriter out) {
 		IndentPrintWriter iout = new IndentPrintWriter(out);
 		iout.setIndentString("\t");
 		int indent = 0;
 		
 		iout.println("graph [");
-		iout.println("directed\t" + (graph.isDirected() ? 1 : 0));
+		iout.println("directed\t" + (g.isDirected() ? 1 : 0));
 		iout.setIndent(++indent);
 
 		//Print nodes and attributes
-		for(Node n : graph.getNodes()) {
+		for(Node n : g.getNodes()) {
 			iout.println("node [");
 			iout.setIndent(++indent);
 			iout.println("id\t" + n.hashCode());
@@ -27,7 +27,7 @@ public class GmlWriter {
 			iout.println("]");
 		}
 		//Print edges and attributes
-		for(Edge e : graph.getEdges()) {
+		for(Edge e : g.getEdges()) {
 			iout.println("edge [");
 			iout.setIndent(++indent);
 			String srcS = e.getSrc().getId();
@@ -43,7 +43,7 @@ public class GmlWriter {
 			iout.println("]");
 		}
 		//Print network attributes
-		printAttributes(iout, graph);
+		printAttributes(iout, g);
 		iout.setIndent(--indent);
 		iout.println("]");
 	}

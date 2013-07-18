@@ -2,10 +2,8 @@ package org.tno.networks;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -29,17 +27,13 @@ import org.tno.networks.args.AHelp;
 import org.tno.networks.args.AIDMapper;
 import org.tno.networks.args.DIDMapper;
 import org.tno.networks.graph.AttributeName;
-import org.tno.networks.graph.GmlWriter;
 import org.tno.networks.graph.Graph;
 import org.tno.networks.graph.Graph.Edge;
 import org.tno.networks.graph.Graph.Node;
-import org.tno.networks.graph.Neo4jException;
 import org.tno.networks.graph.Neo4jGraph;
-import org.tno.networks.graph.Neo4jWriter;
-import org.tno.networks.graph.XGMMLWriter;
 
-import uk.co.flamingpenguin.jewel.cli.CliFactory;
-import uk.co.flamingpenguin.jewel.cli.Option;
+import com.lexicalscope.jewel.cli.CliFactory;
+import com.lexicalscope.jewel.cli.Option;
 
 public class Neo4jTest {
 
@@ -136,7 +130,7 @@ private final static Logger log = Logger.getLogger(StringToNetwork.class.getName
 					endpoints.add(xb);
 					
 					if(directed || xa.equals(xb)) {
-						Edge e = graph.addEdge(xa + "(" + type + "|" + source + ")" + xb, na, nb);
+						Edge e = graph.addEdge(xa + "(" + type + "|" + source + ")" + xb, na, nb,AttributeName.Interaction.name(),type);
 						e.setAttribute(AttributeName.Directed.name(), "true");
 						directedEdges.add(endpoints);
 					} else {
@@ -144,8 +138,8 @@ private final static Logger log = Logger.getLogger(StringToNetwork.class.getName
 						//Don't overwrite with less specific undirected edge.
 						if(directedEdges.contains(endpoints)) continue;
 						
-						Edge e1 = graph.addEdge(xa + "(" + type + "|" + source + ")" + xb, na, nb);
-						Edge e2 = graph.addEdge(xb + "(" + type + "|" + source + ")" + xa, nb, na);
+						Edge e1 = graph.addEdge(xa + "(" + type + "|" + source + ")" + xb, na, nb,AttributeName.Interaction.name(),type);
+						Edge e2 = graph.addEdge(xb + "(" + type + "|" + source + ")" + xa, nb, na,AttributeName.Interaction.name(),type);
 						addedEdges.add(e1);
 						addedEdges.add(e2);
 						e1.setAttribute(AttributeName.Directed.name(), "false");

@@ -4,8 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.neo4j.graphdb.DynamicRelationshipType;
 import org.neo4j.graphdb.GraphDatabaseService;
 import org.neo4j.graphdb.Relationship;
+import org.neo4j.graphdb.RelationshipType;
 import org.neo4j.graphdb.Transaction;
 import org.neo4j.graphdb.index.IndexHits;
 
@@ -67,6 +69,14 @@ public class Neo4jGraph extends InMemoryAttributeHolder implements Graph {
 	@Override
 	public Edge addEdge(String id, Node src, Node tgt) {
 
+		Edge e = addEdge(id,src,tgt,"",factory.getRelationshipType().name());
+		return e;
+	}
+	
+	@Override
+	public Edge addEdge(String id, Node src, Node tgt, String typename,
+			String type) {
+		
 		Edge e = getEdge(id);
 
 		if(e == null){
@@ -76,7 +86,9 @@ public class Neo4jGraph extends InMemoryAttributeHolder implements Graph {
 				Neo4jNode nSrc = (Neo4jNode)src;
 				Neo4jNode nTgt = (Neo4jNode)tgt;
 
-				Relationship r = nSrc.getUnderlyingNode().createRelationshipTo(nTgt.getUnderlyingNode(), factory.getRelationshipType()); 
+				RelationshipType reltype = DynamicRelationshipType.withName(type);
+				
+				Relationship r = nSrc.getUnderlyingNode().createRelationshipTo(nTgt.getUnderlyingNode(), reltype); 
 				e = new Neo4jEdge(nSrc,nTgt,id,r);
 
 				tx.success();
@@ -84,7 +96,7 @@ public class Neo4jGraph extends InMemoryAttributeHolder implements Graph {
 				tx.finish();
 			}
 		}
-
+		
 		return e;
 	}
 
@@ -119,6 +131,9 @@ public class Neo4jGraph extends InMemoryAttributeHolder implements Graph {
 		return e;
 	}
 
+	/**
+	 * NOTE: quite slow! try to avoid
+	 */
 	@Override
 	public Collection<Node> getNodes() {
 		
@@ -131,6 +146,9 @@ public class Neo4jGraph extends InMemoryAttributeHolder implements Graph {
 		return result;
 	}
 
+	/**
+	 * NOTE: quite slow! try to avoid
+	 */
 	@Override
 	public Collection<Edge> getEdges() {
 		Set<Edge> result = new HashSet<Edge>();

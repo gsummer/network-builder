@@ -15,6 +15,8 @@ public interface Graph extends AttributeHolder {
 	public Node addNode(String id);
 
 	public Edge addEdge(String id, Node src, Node tgt);
+	
+	public Edge addEdge(String id, Node src, Node tgt, String typename, String type);
 
 	public Node getNode(String id);
 

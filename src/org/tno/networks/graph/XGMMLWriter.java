@@ -13,20 +13,20 @@ import org.tno.networks.graph.Graph.Node;
 public class XGMMLWriter {
 	final static String NS = "http://www.cs.rpi.edu/XGMML";
 	
-	public static <N, E> void write(InMemoryGraph graph, PrintWriter out) throws IOException {
+	public static <N, E> void write(Graph g, PrintWriter out) throws IOException {
 		Document doc = new Document();
 
 		Element root = new Element("graph", NS);
 		doc.setRootElement(root);
 		
 		root.setAttribute("id", "" + System.currentTimeMillis());
-		root.setAttribute("label", graph.getTitle());
+		root.setAttribute("label", g.getTitle());
 		
 		//Print the graph attributes
-		printAttributes(graph, root);
+		printAttributes(g, root);
 		
 		//Create the nodes
-		for(Node n : graph.getNodes()) {
+		for(Node n : g.getNodes()) {
 			Element e = new Element("node");
 			e.setAttribute("id", n.getId());
 			e.setAttribute("label", n.getId());
@@ -37,7 +37,7 @@ public class XGMMLWriter {
 		}
 		
 		//Create the edges
-		for(Edge edge : graph.getEdges()) {
+		for(Edge edge : g.getEdges()) {
 			Node src = edge.getSrc();
 			Node tgt = edge.getTgt();
 			

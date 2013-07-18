@@ -74,7 +74,7 @@ public class Neo4jFactory {
 			
 			connectionType = ConnectionType.valueOf(db.getChildText("type"));
 			
-			relationshipTypeAttribute = DynamicRelationshipType.withName(AttributeName.valueOf(root.getChildText("relationship_type_attribute")).name());
+			relationshipTypeAttribute = DynamicRelationshipType.withName(AttributeName.valueOf(root.getChildText("default_relationship_type_attribute")).name());
 			
 //			maxInstances = Integer.valueOf(root.getChildText("max_instances"));
 //			<max_instances>1</max_instances>

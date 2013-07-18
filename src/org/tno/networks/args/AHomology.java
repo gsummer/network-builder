@@ -2,7 +2,7 @@ package org.tno.networks.args;
 
 import java.util.List;
 
-import uk.co.flamingpenguin.jewel.cli.Option;
+import com.lexicalscope.jewel.cli.Option;
 
 public interface AHomology {
 	@Option(description = "Bridgedb connection strings to idmapper that contains the homology mappings.")

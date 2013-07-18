@@ -36,14 +36,14 @@ public class NetworkIDMapper {
 		);
 	}
 	
-	public InMemoryGraph mapIDs(InMemoryGraph g) throws IDMapperException {
+	public InMemoryGraph mapIDs(Graph graph) throws IDMapperException {
 		InMemoryGraph gm = new InMemoryGraph();
-		copyAttributes(g, gm);
+		copyAttributes(graph, gm);
 		
-		Set<Node> tomap = new HashSet<Node>(g.getNodes());
+		Set<Node> tomap = new HashSet<Node>(graph.getNodes());
 		
 		//Copy edges
-		for(Edge e : g.getEdges()) {
+		for(Edge e : graph.getEdges()) {
 			Node src = e.getSrc();
 			Node tgt = e.getTgt();
 			
