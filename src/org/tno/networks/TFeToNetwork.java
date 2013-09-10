@@ -166,7 +166,7 @@ public class TFeToNetwork {
 	}
 	
 	private interface Args extends AHelp, AIDMapper, ANeo4j {
-		@Option(shortName = "o", description = "The file to write the network to")
+		@Option(shortName = "o", description = "The file to write the network to",defaultToNull=true)
 		File getOut();
 		
 		@Option(description = "Only extract TFs for given species (latin name).")

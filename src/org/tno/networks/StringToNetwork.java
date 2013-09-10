@@ -288,7 +288,7 @@ public class StringToNetwork {
 		@Option(description = "The path to the stitch 'actions.detailed' file.")
 		File getIn();
 
-		@Option(description = "The file to write the imported network to")
+		@Option(description = "The file to write the imported network to",defaultToNull=true)
 		File getOut();
 
 		@Option(defaultValue = "400", description = "The minimum score an interaction should have to be included.")
